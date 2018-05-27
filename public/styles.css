@@ -16,3 +16,7 @@
 #app{
   min-height: 100vh;
 }
+
+#title{
+  margin: 0px 175px;
+}
