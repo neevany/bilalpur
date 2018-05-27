@@ -6,8 +6,8 @@ class AppComponent extends React.Component {
     super(props);
     this.state = {
       maxAuthors: 10,
-      noOfAuthors: 1,
-      authorNames: ['neevany']
+      noOfAuthors: 2,
+      authors: [{id:'1741101'},{id:'1741102'}]
      }
   }
   
@@ -17,21 +17,27 @@ class AppComponent extends React.Component {
 
   handleAuthorName(event,index) {
     let state = this.state;
-    state.authorNames[index] = event.target.value;
+    state.authors[index] = {}
+    state.authors[index].id = event.target.value;
     this.setState(state);
   }
 
   handleSubmit(event) {
     event.preventDefault();
     let state = this.state;
-    state.loadingAuthorData = true;
-    this.setState(state)
-    axios.get(`https://api.github.com/users/${this.state.authorNames[0]}`).then((response) => {
-      let state = this.state;
-      state.authorData = response;
-      state.loadingAuthorData = false;
+    state.authors.forEach((a,i) => {
+      state.authors[i].loading = true;
       this.setState(state)
+      this.getAuthorInfo(a.id).then((response) => {
+        state.authors[i].data = response.data;
+        state.authors[i].loading = false;
+        this.setState(state)
+      })
     })
+  }
+
+  getAuthorInfo(authorId) {
+    return axios.get(`https://api.semanticscholar.org/v1/author/${authorId}`);
   }
   render() { 
     return (
@@ -48,8 +54,8 @@ class AppComponent extends React.Component {
           </label>
           {[...Array(this.state.noOfAuthors)].map((v,i) => {
             return (
-            <label>Author {i+1}:
-              <input type="text" value={this.state.authorNames[i]} onChange={(e) => this.handleAuthorName(e,i)} />
+            <label key={i}>Author ID {i+1}:
+              <input type="text" value={this.state.authors[i] && this.state.authors[i].id} onChange={(e) => this.handleAuthorName(e,i)} />
             </label>
             )
           })}
@@ -58,8 +64,23 @@ class AppComponent extends React.Component {
         </div>
       </div>
       <div col="3/4">
-      <div style={{padding:'10px',background: '#eee'}}>
-        { this.state.loadingAuthorData ? <div class="spinner"></div> : <pre>{JSON.stringify(this.state.authorData,null,2)}</pre>}
+      <div style={{display:'flex',flexWrap: 'wrap'}}>
+        {this.state.authors.map((author,i) => {
+          {return author.loading ?  <div key={i} className="spinner"></div> : 
+            (author.data ? 
+            <div key={i} style={{flex:'1 0 30%',margin:'5px'}}>
+              <card>
+                <h5>{author.data.name} <a href={author.data.url} target="_blank" style={{opacity: '0.5',float: 'right'}}>#{author.data.authorId}</a></h5>
+                <hr/>
+	              <p>Citation Velocity: {author.data.citationVelocity}</p>
+                <p>Influential Citation Count: {author.data.influentialCitationCount}</p>
+                <p>No of papers: {author.data.papers.length}</p>
+              </card>
+              <br/>
+            </div> : 
+            null)
+          }
+        })}
       </div>
       </div>
       </grid>
