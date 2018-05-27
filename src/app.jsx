@@ -17,6 +17,7 @@ class AppComponent extends React.Component {
 
   handleAuthorName(event,index) {
     let state = this.state;
+    state.authors[index] = {};
     state.authors[index].id = event.target.value;
     this.setState(state);
   }
@@ -94,7 +95,6 @@ class AppComponent extends React.Component {
                 </ul>
                 </p>
               </card>
-              <br/>
             </div> : 
             null)
           }
