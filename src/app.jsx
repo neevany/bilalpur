@@ -7,7 +7,7 @@ class AppComponent extends React.Component {
     this.state = {
       maxAuthors: 10,
       noOfAuthors: 2,
-      authors: [{id:'1741101'},{id:'1741102'}]
+      authors: [{id:'1741101'},{id:'1741102'}],
      }
   }
   
@@ -17,7 +17,6 @@ class AppComponent extends React.Component {
 
   handleAuthorName(event,index) {
     let state = this.state;
-    state.authors[index] = {}
     state.authors[index].id = event.target.value;
     this.setState(state);
   }
@@ -31,14 +30,26 @@ class AppComponent extends React.Component {
       this.getAuthorInfo(a.id).then((response) => {
         state.authors[i].data = response.data;
         state.authors[i].loading = false;
-        this.setState(state)
+        this.setState(state);
+        state.authors[i].data.papersData = [];
+        state.authors[i].data.papers.splice(0,3).forEach((p,j) =>{
+          this.getPaperInfo(p.paperId).then((response) => {
+            state.authors[i].data.papersData.push({name: response.data.title, citations: response.data.citations.length });
+            this.setState(state)
+          })
+          })
+        })
       })
-    })
   }
 
   getAuthorInfo(authorId) {
     return axios.get(`https://api.semanticscholar.org/v1/author/${authorId}`);
   }
+
+  getPaperInfo(paperId) {
+    return axios.get(`http://api.semanticscholar.org/v1/paper/${paperId}`);
+  }
+
   render() { 
     return (
       <grid>
@@ -72,9 +83,16 @@ class AppComponent extends React.Component {
               <card>
                 <h5>{author.data.name} <a href={author.data.url} target="_blank" style={{opacity: '0.5',float: 'right'}}>#{author.data.authorId}</a></h5>
                 <hr/>
-	              <p>Citation Velocity: {author.data.citationVelocity}</p>
+                  <p>Citation Velocity: {author.data.citationVelocity}</p>
                 <p>Influential Citation Count: {author.data.influentialCitationCount}</p>
                 <p>No of papers: {author.data.papers.length}</p>
+                <p>Top 3 papers:
+                <ul>
+                {[...Array(3)].map((v,i) => {
+                  return <li key={i}>{author.data.papersData && author.data.papersData[i] && author.data.papersData[i].name}</li>
+                })}
+                </ul>
+                </p>
               </card>
               <br/>
             </div> : 
@@ -89,3 +107,4 @@ class AppComponent extends React.Component {
 }
  
 export default AppComponent;
+

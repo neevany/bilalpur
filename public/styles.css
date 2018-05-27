@@ -1,5 +1,5 @@
 .spinner {
-  margin: auto;
+  margin: 20px auto;
   height: 28px;
   width: 28px;
   animation: rotate 0.8s infinite linear;
@@ -11,4 +11,8 @@
 @keyframes rotate {
   0%    { transform: rotate(0deg); }
   100%  { transform: rotate(360deg); }
+}
+
+#app{
+  min-height: 100vh;
 }
