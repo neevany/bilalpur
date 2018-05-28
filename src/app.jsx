@@ -36,34 +36,13 @@ class AppComponent extends React.Component {
         state.authors[i].data.papers.forEach((p,j) =>{
           this.getPaperInfo(p.paperId).then((response) => {
             state.authors[i].data.papersData.push({name: response.data.title, citations: response.data.citations.length });
+            state.authors[i].data.papersData.sort((a,b) => {return a.citations < b.citations ? 1 : -1});
             this.setState(state)
           })
-          })
-          state.authors[i].data.cite_sort_ind = this.sortWithIndices(state.authors[i].data.papersData.citations);
-          state.authors[i].data.toppapers = [];
-          for (var k =0; k<3;k++){
-          state.authors[i].data.toppapers.push(state.authors[i].data.papersData.name[state.authors[i].data.cite_sort_ind[k]]);
-          this.setState(state)
-          }
+        })
       })
-  })
-}
-
-  sortWithIndices(toSort) {
-  for (var i = 0; i < toSort.length; i++) {
-    toSort[i] = [toSort[i], i];
+    })
   }
-  toSort.sort(function(left, right) {
-    return left[0] < right[0] ? -1 : 1;
-  });
-  toSort.sortIndices = [];
-  for (var j = 0; j < toSort.length; j++) {
-    toSort.sortIndices.push(toSort[j][1]);
-    toSort[j] = toSort[j][0];
-  }
-  console.log(toSort.sortIndices);
-  return toSort.sortIndices;
-}
 
   getAuthorInfo(authorId) {
     return axios.get(`https://api.semanticscholar.org/v1/author/${authorId}`);
@@ -112,7 +91,7 @@ class AppComponent extends React.Component {
                 <p>Top 3 papers:
                 <ul>
                 {[...Array(3)].map((v,i) => {
-                  return <li key={i}>{author.data.toppapers[i]}</li>
+                  return <li key={i}>{author.data.papersData && author.data.papersData[i] && author.data.papersData[i].name}</li>
                 })}
                 </ul>
                 </p>
