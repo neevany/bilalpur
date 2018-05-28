@@ -33,15 +33,34 @@ class AppComponent extends React.Component {
         state.authors[i].loading = false;
         this.setState(state);
         state.authors[i].data.papersData = [];
-        state.authors[i].data.papers.splice(0,3).forEach((p,j) =>{
+        state.authors[i].data.papers.forEach((p,j) =>{
           this.getPaperInfo(p.paperId).then((response) => {
             state.authors[i].data.papersData.push({name: response.data.title, citations: response.data.citations.length });
             this.setState(state)
           })
+          state.authors[i].data.cite_sort_ind = this.sortWithIndices(state.authors[i].data.papersData.citations)
           })
-        })
+          for (var i =0; i<3;i++){
+          state.authors[i].data.toppapers.push(state.authors[i].data.papersData.name[state.authors[i].data.cite_sort_ind[i]])
+          }
       })
   }
+}
+
+  sortWithIndices(toSort) {
+  for (var i = 0; i < toSort.length; i++) {
+    toSort[i] = [toSort[i], i];
+  }
+  toSort.sort(function(left, right) {
+    return left[0] < right[0] ? -1 : 1;
+  });
+  toSort.sortIndices = [];
+  for (var j = 0; j < toSort.length; j++) {
+    toSort.sortIndices.push(toSort[j][1]);
+    toSort[j] = toSort[j][0];
+  }
+  return toSort.sortIndices;
+}
 
   getAuthorInfo(authorId) {
     return axios.get(`https://api.semanticscholar.org/v1/author/${authorId}`);
@@ -89,8 +108,11 @@ class AppComponent extends React.Component {
                 <p>No of papers: {author.data.papers.length}</p>
                 <p>Top 3 papers:
                 <ul>
-                {[...Array(3)].map((v,i) => {
+/*                {[...Array(3)].map((v,i) => {
                   return <li key={i}>{author.data.papersData && author.data.papersData[i] && author.data.papersData[i].name}</li>
+                })}*/
+                {[...Array(3)].map((v,i) => {
+                  return <li key={i}>{author.data.toppapers[i]}</li>
                 })}
                 </ul>
                 </p>
@@ -104,7 +126,5 @@ class AppComponent extends React.Component {
       </grid>
     )
   }
-}
- 
+} 
 export default AppComponent;
-
