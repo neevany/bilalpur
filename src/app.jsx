@@ -38,13 +38,15 @@ class AppComponent extends React.Component {
             state.authors[i].data.papersData.push({name: response.data.title, citations: response.data.citations.length });
             this.setState(state)
           })
-          state.authors[i].data.cite_sort_ind = this.sortWithIndices(state.authors[i].data.papersData.citations)
           })
-          for (var i =0; i<3;i++){
-          state.authors[i].data.toppapers.push(state.authors[i].data.papersData.name[state.authors[i].data.cite_sort_ind[i]])
+          state.authors[i].data.cite_sort_ind = this.sortWithIndices(state.authors[i].data.papersData.citations);
+          state.authors[i].data.toppapers = [];
+          for (var k =0; k<3;k++){
+          state.authors[i].data.toppapers.push(state.authors[i].data.papersData.name[state.authors[i].data.cite_sort_ind[k]]);
+          this.setState(state)
           }
       })
-  }
+  })
 }
 
   sortWithIndices(toSort) {
@@ -59,6 +61,7 @@ class AppComponent extends React.Component {
     toSort.sortIndices.push(toSort[j][1]);
     toSort[j] = toSort[j][0];
   }
+  console.log(toSort.sortIndices);
   return toSort.sortIndices;
 }
 
@@ -108,9 +111,6 @@ class AppComponent extends React.Component {
                 <p>No of papers: {author.data.papers.length}</p>
                 <p>Top 3 papers:
                 <ul>
-/*                {[...Array(3)].map((v,i) => {
-                  return <li key={i}>{author.data.papersData && author.data.papersData[i] && author.data.papersData[i].name}</li>
-                })}*/
                 {[...Array(3)].map((v,i) => {
                   return <li key={i}>{author.data.toppapers[i]}</li>
                 })}
