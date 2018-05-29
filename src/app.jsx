@@ -45,6 +45,8 @@ class AppComponent extends React.Component {
  * @returns   state.authors[].data.influential citations
  * @returns   state.authors[].data.papersData.name--names in sorted order of citations
  * @returns   state.authors[].data.papersData.citations.
+ * @returns   state.authors[].data.papersData.citationYears--array of citation year for each paper.
+ * @returns   state.authors[].data.papersData.trend--if paper has increasing citations since the past 3 years(exclude current).
 */
   handleSubmit(event) {
     event.preventDefault();
@@ -57,6 +59,7 @@ class AppComponent extends React.Component {
       this.getAuthorInfo(a.id).then((response) => {
         state.authors[i].data = response.data;
         state.authors[i].loading = false;
+        state.authors[i].citations = 0;
         this.setState(state);
         state.authors[i].data.papersData = [];
         state.authors[i].data.papers.forEach((p,j) =>{
@@ -79,6 +82,9 @@ class AppComponent extends React.Component {
               trend: trend
             });
 
+            state.authors[i].citations += state.authors[i].data.papersData.citations;
+            console.log(state.authors[i].data.papersData.citations)
+
             if(state.authors[i].data.papersData.length === state.authors[i].data.papers.length) {
               state.authors[i].data.papersData.sort((a,b) => {return a.citations < b.citations ? 1 : -1});
             }
@@ -91,6 +97,8 @@ class AppComponent extends React.Component {
 
 /**
 Return the year wise relative citation trend
+@params {int} noOfYears-no. of years of citation trend to consider(set to 3).
+@params {int} currYear-current year.
 */
   getCitationTrend(citationYears, noOfYears = 3, currYear){
     var ref = citationYears[0], ref_id = 0;
