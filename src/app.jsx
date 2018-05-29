@@ -48,7 +48,7 @@ class AppComponent extends React.Component {
 */
   handleSubmit(event) {
     event.preventDefault();
-    var nyears = 3;
+    var noOfYears = 3;
     var currYear = (new Date()).getFullYear();
     let state = this.state;
     state.authors.forEach((a,i) => {
@@ -59,20 +59,29 @@ class AppComponent extends React.Component {
         state.authors[i].loading = false;
         this.setState(state);
         state.authors[i].data.papersData = [];
-        state.authors[i].data.papersData.citationyears = []
-        state.authors[i].data.papersData.trend = []
         state.authors[i].data.papers.forEach((p,j) =>{
           this.getPaperInfo(p.paperId).then((response) => {
-            state.authors[i].data.papersData.push({name: response.data.title, citations: response.data.citations.length});
+            
+            let citationYears = [];
             response.data.citations.forEach((cite, k)=>{
-              if(response.data.citations[k].year > currYear-nyears-1 && response.data.citations[k].year != currYear)
-              state.authors[i].data.papersData.citationyears.push(response.data.citations[k].year);
+              if((cite.year > currYear - noOfYears - 1) && cite.year != currYear){
+                citationYears.push(cite.year);
+              }
             })
-            state.authors[i].data.papersData.sort((a,b) => {return a.citations < b.citations ? 1 : -1});
-            state.authors[i].data.papersData.citationyears.sort((a,b) => {return a < b ? 1 : -1});
-            state.authors[i].data.papersData.trend = this.getcitationtrend(state.authors[i].data.papersData.citationyears, nyears, currYear);
-            // console.log(state.authors[i].data.papersData.citationyears);
-            console.log(state.authors[i].data.papersData.name, state.authors[i].data.papersData.trend);
+            citationYears.sort((a,b) => {return a < b ? 1 : -1});
+            
+            let trend = this.getCitationTrend(citationYears, noOfYears, currYear);
+            
+            state.authors[i].data.papersData.push({
+              name: response.data.title,
+              citations: response.data.citations.length,
+              citationYears: citationYears,
+              trend: trend
+            });
+
+            if(state.authors[i].data.papersData.length === state.authors[i].data.papers.length) {
+              state.authors[i].data.papersData.sort((a,b) => {return a.citations < b.citations ? 1 : -1});
+            }
             this.setState(state)
           })
         })
@@ -83,20 +92,20 @@ class AppComponent extends React.Component {
 /**
 Return the year wise relative citation trend
 */
-  getcitationtrend(citationyears, nyears = 3, currYear){
-    var ref = citationyears[0], ref_id = 0;
-    var count = new Array(nyears).fill(0);
-    for(var i=1;citationyears[i]>currYear-nyears-1;i++){//exclude the current year in determining the trend
-      if(citationyears[i]==ref)
+  getCitationTrend(citationYears, noOfYears = 3, currYear){
+    var ref = citationYears[0], ref_id = 0;
+    var count = new Array(noOfYears).fill(0);
+    for (var i = 1; citationYears[i] > currYear - noOfYears - 1; i++) { //exclude the current year in determining the trend
+      if (citationYears[i] == ref)
         count[ref_id]++;
-      else{
-        ref = citationyears[i];
+      else {
+        ref = citationYears[i];
         ref_id++;
       }
     }
     var trendFlag = 1;
-    for(var i = 1;i<nyears;i++){
-      if(count[i-1]<count[i])
+    for (var i = 1; i < noOfYears; i++) {
+      if (count[i - 1] < count[i])
         trendFlag = 0;
     }
     console.log(count, trendFlag, count.length)
