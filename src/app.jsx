@@ -48,6 +48,8 @@ class AppComponent extends React.Component {
 */
   handleSubmit(event) {
     event.preventDefault();
+    var nyears = 3;
+    var currYear = (new Date()).getFullYear();
     let state = this.state;
     state.authors.forEach((a,i) => {
       state.authors[i].loading = true;
@@ -57,15 +59,48 @@ class AppComponent extends React.Component {
         state.authors[i].loading = false;
         this.setState(state);
         state.authors[i].data.papersData = [];
+        state.authors[i].data.papersData.citationyears = []
+        state.authors[i].data.papersData.trend = []
         state.authors[i].data.papers.forEach((p,j) =>{
           this.getPaperInfo(p.paperId).then((response) => {
-            state.authors[i].data.papersData.push({name: response.data.title, citations: response.data.citations.length });
+            state.authors[i].data.papersData.push({name: response.data.title, citations: response.data.citations.length});
+            response.data.citations.forEach((cite, k)=>{
+              if(response.data.citations[k].year > currYear-nyears-1 && response.data.citations[k].year != currYear)
+              state.authors[i].data.papersData.citationyears.push(response.data.citations[k].year);
+            })
             state.authors[i].data.papersData.sort((a,b) => {return a.citations < b.citations ? 1 : -1});
+            state.authors[i].data.papersData.citationyears.sort((a,b) => {return a < b ? 1 : -1});
+            state.authors[i].data.papersData.trend = this.getcitationtrend(state.authors[i].data.papersData.citationyears, nyears, currYear);
+            // console.log(state.authors[i].data.papersData.citationyears);
+            console.log(state.authors[i].data.papersData.name, state.authors[i].data.papersData.trend);
             this.setState(state)
           })
         })
       })
     })
+  }
+
+/**
+Return the year wise relative citation trend
+*/
+  getcitationtrend(citationyears, nyears = 3, currYear){
+    var ref = citationyears[0], ref_id = 0;
+    var count = new Array(nyears).fill(0);
+    for(var i=1;citationyears[i]>currYear-nyears-1;i++){//exclude the current year in determining the trend
+      if(citationyears[i]==ref)
+        count[ref_id]++;
+      else{
+        ref = citationyears[i];
+        ref_id++;
+      }
+    }
+    var trendFlag = 1;
+    for(var i = 1;i<nyears;i++){
+      if(count[i-1]<count[i])
+        trendFlag = 0;
+    }
+    console.log(count, trendFlag, count.length)
+    return trendFlag
   }
 
 /**
@@ -128,8 +163,8 @@ Render the page with authorId inputs and author details cards
                 <p>No of papers: {author.data.papers.length}</p>
                 <p>Top 3 papers:
                 <ul>
-                {[...Array(3)].map((v,i) => {
-                  return <li key={i}>{author.data.papersData && author.data.papersData[i] && author.data.papersData[i].name}</li>
+                {[...Array(author.data.papersData)].map((v,i) => {
+                  return <li key={i}>{author.data.papersData && author.data.papersData[i] && author.data.papersData[i].name && author.data.papersData[i].trend}</li>
                 })}
                 </ul>
                 </p>
