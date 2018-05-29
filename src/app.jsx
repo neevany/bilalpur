@@ -71,7 +71,7 @@ class AppComponent extends React.Component {
             citationYears.sort((a,b) => {return a < b ? 1 : -1});
             
             let trend = this.getCitationTrend(citationYears, noOfYears, currYear);
-            
+
             state.authors[i].data.papersData.push({
               name: response.data.title,
               citations: response.data.citations.length,
@@ -172,9 +172,9 @@ Render the page with authorId inputs and author details cards
                 <p>No of papers: {author.data.papers.length}</p>
                 <p>Top 3 papers:
                 <ul>
-                {[...Array(author.data.papersData)].map((v,i) => {
-                  return <li key={i}>{author.data.papersData && author.data.papersData[i] && author.data.papersData[i].name && author.data.papersData[i].trend}</li>
-                })}
+                {author.data.papersData ? [...Array(author.data.papersData.length)].map((v,i) => {
+                  return <li key={i}>{author.data.papersData[i].name} - {author.data.papersData[i].trend}</li>
+                }) : null}
                 </ul>
                 </p>
               </card>
