@@ -108,8 +108,7 @@ Return the year wise relative citation trend
       if (count[i - 1] < count[i])
         trendFlag = 0;
     }
-    console.log(count, trendFlag, count.length)
-    return trendFlag
+    return trendFlag? 'Upward Trending': 'Downward Trending'
   }
 
 /**
@@ -170,7 +169,7 @@ Render the page with authorId inputs and author details cards
                   <p>Citation Velocity: {author.data.citationVelocity}</p>
                 <p>Influential Citation Count: {author.data.influentialCitationCount}</p>
                 <p>No of papers: {author.data.papers.length}</p>
-                <p>Top 3 papers:
+                <p>List of paper with citation trend:
                 <ul>
                 {author.data.papersData ? [...Array(author.data.papersData.length)].map((v,i) => {
                   return <li key={i}>{author.data.papersData[i].name} - {author.data.papersData[i].trend}</li>
