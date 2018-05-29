@@ -25,6 +25,8 @@
     "babel-preset-env": "^1.7.0",
     "babel-preset-react": "^6.24.1",
     "babel-preset-stage-2": "^6.24.1",
+    "jsdoc": "^3.5.5",
+    "jsdoc-jsx": "^0.1.0",
     "webpack": "^4.9.1",
     "webpack-cli": "^2.1.4"
   }

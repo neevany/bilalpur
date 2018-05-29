@@ -2,6 +2,11 @@ import React from 'react';
 import axios from 'axios'
 
 class AppComponent extends React.Component {
+/**
+  *Declare AppComponent class with default settings
+  *max. comparison of 10 authors (default author ids-"1741101" and "1741102").
+  @contructor
+*/
   constructor(props) {
     super(props);
     this.state = {
@@ -10,10 +15,21 @@ class AppComponent extends React.Component {
       authors: [{id:'1741101'},{id:'1741102'}],
      }
   }
+
+/**
+  *member function triggered on "no.of authors" field change
+  @returns {state} State updated with no. of authors
+*/
   
   handleAuthorsSelect(event) {
     this.setState({noOfAuthors: parseInt(event.target.value)});
   }
+
+/**
+  *Set author index upon entering the id.
+  @param {int} index - author index.
+  @returns {state} State updated with authorId.
+*/
 
   handleAuthorName(event,index) {
     let state = this.state;
@@ -22,6 +38,14 @@ class AppComponent extends React.Component {
     this.setState(state);
   }
 
+/**
+ *Get author details and top 3 papers upon submit
+ * @returns   state.authors[]
+ * @returns   state.authors[].id
+ * @returns   state.authors[].data.influential citations
+ * @returns   state.authors[].data.papersData.name--names in sorted order of citations
+ * @returns   state.authors[].data.papersData.citations.
+*/
   handleSubmit(event) {
     event.preventDefault();
     let state = this.state;
@@ -44,13 +68,27 @@ class AppComponent extends React.Component {
     })
   }
 
+/**
+Call Semantic Scholar API with authorId
+  @param {int} authorId - author index
+*/
+
   getAuthorInfo(authorId) {
     return axios.get(`https://api.semanticscholar.org/v1/author/${authorId}`);
   }
 
+/**
+Call Semantic Scholar API with paperId
+  @param {int} paperId - paper index
+*/
+
   getPaperInfo(paperId) {
     return axios.get(`http://api.semanticscholar.org/v1/paper/${paperId}`);
   }
+
+/**
+Render the page with authorId inputs and author details cards
+*/
 
   render() { 
     return (
