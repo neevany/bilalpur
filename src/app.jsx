@@ -61,6 +61,7 @@ class AppComponent extends React.Component {
         state.authors[i].loading = false;
         state.authors[i].citations = 0;
         this.setState(state);
+
         state.authors[i].data.papersData = [];
         state.authors[i].data.papers.forEach((p,j) =>{
           this.getPaperInfo(p.paperId).then((response) => {
@@ -82,10 +83,8 @@ class AppComponent extends React.Component {
               trend: trend
             });
 
-            state.authors[i].citations += state.authors[i].data.papersData.citations;
-            console.log(state.authors[i].data.papersData.citations)
-
             if(state.authors[i].data.papersData.length === state.authors[i].data.papers.length) {
+              state.authors[i].citations += state.authors[i].data.papersData.map(p => p.citations).reduce((i,a) => a = a+i ,0);
               state.authors[i].data.papersData.sort((a,b) => {return a.citations < b.citations ? 1 : -1});
             }
             this.setState(state)
