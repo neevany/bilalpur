@@ -75,17 +75,21 @@ class AppComponent extends React.Component {
             citationYears.sort((a,b) => {return a < b ? 1 : -1});
             
             let trend = this.getCitationTrend(citationYears, noOfYears, currYear);
+            let upTrendCount = 0;
+            if(trend == 'Upward Trending')
+              upTrendCount++;
 
             state.authors[i].data.papersData.push({
               name: response.data.title,
               citations: response.data.citations.length,
               citationYears: citationYears,
-              trend: trend
+              trend: trend,
             });
 
             if(state.authors[i].data.papersData.length === state.authors[i].data.papers.length) {
               state.authors[i].citations += state.authors[i].data.papersData.map(p => p.citations).reduce((i,a) => a = a+i ,0);
               state.authors[i].data.papersData.sort((a,b) => {return a.citations < b.citations ? 1 : -1});
+              console.log(upTrendCount/state.authors[i].data.papers.length)
             }
             this.setState(state)
           })
@@ -176,13 +180,16 @@ Render the page with authorId inputs and author details cards
                   <p>Citation Velocity: {author.data.citationVelocity}</p>
                 <p>Influential Citation Count: {author.data.influentialCitationCount}</p>
                 <p>No of papers: {author.data.papers.length}</p>
-                <p>List of paper with citation trend:
+                <p>List of paper with citation trend:</p>
                 <ul>
                 {author.data.papersData ? [...Array(author.data.papersData.length)].map((v,i) => {
                   return <li key={i}>{author.data.papersData[i].name} - {author.data.papersData[i].trend}</li>
                 }) : null}
                 </ul>
-                </p>
+                <script src="https://code.highcharts.com/highcharts.js"></script>
+                <script src="https://code.highcharts.com/modules/exporting.js"></script>
+                <script src="https://code.highcharts.com/modules/export-data.js"></script>
+                <script src="src/pie_chart.js"></script>
               </card>
             </div> : 
             null)
