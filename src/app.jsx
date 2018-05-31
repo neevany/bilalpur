@@ -1,5 +1,6 @@
 import React from 'react';
 import axios from 'axios'
+import ChartComponent from './chart'
 
 class AppComponent extends React.Component {
 /**
@@ -186,16 +187,13 @@ Render the page with authorId inputs and author details cards
                   return <li key={i}>{author.data.papersData[i].name} - {author.data.papersData[i].trend}</li>
                 }) : null}
                 </ul>
-                <script src="https://code.highcharts.com/highcharts.js"></script>
-                <script src="https://code.highcharts.com/modules/exporting.js"></script>
-                <script src="https://code.highcharts.com/modules/export-data.js"></script>
-                <script src="src/pie_chart.js"></script>
               </card>
             </div> : 
             null)
           }
         })}
       </div>
+        <ChartComponent/>
       </div>
       </grid>
     )
