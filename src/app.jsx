@@ -76,9 +76,9 @@ class AppComponent extends React.Component {
             citationYears.sort((a,b) => {return a < b ? 1 : -1});
             
             let trend = this.getCitationTrend(citationYears, noOfYears, currYear);
-            let upTrendCount = 0;
+            state.authors[i].data.upTrendCount = 0;
             if(trend == 'Upward Trending')
-              upTrendCount++;
+              state.authors[i].data.upTrendCount++;
 
             state.authors[i].data.papersData.push({
               name: response.data.title,
@@ -90,7 +90,8 @@ class AppComponent extends React.Component {
             if(state.authors[i].data.papersData.length === state.authors[i].data.papers.length) {
               state.authors[i].citations += state.authors[i].data.papersData.map(p => p.citations).reduce((i,a) => a = a+i ,0);
               state.authors[i].data.papersData.sort((a,b) => {return a.citations < b.citations ? 1 : -1});
-              console.log(upTrendCount/state.authors[i].data.papers.length)
+              state.authors[i].data.upTrendCount = Number.parseFloat((state.authors[i].data.upTrendCount*100)/state.authors[i].data.papers.length).toFixed(2)
+              // console.log(state.authors[i].data.upTrendCount/state.authors[i].data.papers.length)
             }
             this.setState(state)
           })
@@ -150,7 +151,7 @@ Render the page with authorId inputs and author details cards
       <grid>
       <div col="1/4">
       <div style={{padding:'10px'}}>
-        <form onSubmit={(e) => this.handleSubmit(e)}>
+        <form onSubmit={(e) => this.handleSubmit(e) && ChartComponent.handleChart(e, this.state)}>
           <label>No of Authors:
             <select value={this.state.noOfAuthors} onChange={(e) => this.handleAuthorsSelect(e)}>
             {[...Array(this.state.maxAuthors)].map((v,i) => {
