@@ -60,6 +60,7 @@ class AppComponent extends React.Component {
       this.setState(state)
       this.getAuthorInfo(a.id).then((response) => {
         state.authors[i].data = response.data;
+        state.authors[i].data.upTrendCount = 0;
         state.authors[i].loading = false;
         state.authors[i].citations = 0;
         this.setState(state);
@@ -77,7 +78,6 @@ class AppComponent extends React.Component {
             citationYears.sort((a,b) => {return a < b ? 1 : -1});
             
             let trend = this.getCitationTrend(citationYears, noOfYears, currYear);
-            state.authors[i].data.upTrendCount = 0;
             if(trend == 'Upward Trending')
               state.authors[i].data.upTrendCount++;
 
@@ -91,9 +91,10 @@ class AppComponent extends React.Component {
             if(state.authors[i].data.papersData.length === state.authors[i].data.papers.length) {
               state.authors[i].citations += state.authors[i].data.papersData.map(p => p.citations).reduce((i,a) => a = a+i ,0);
               state.authors[i].data.papersData.sort((a,b) => {return a.citations < b.citations ? 1 : -1});
-              state.authors[i].data.upTrendCount = Number.parseFloat((state.authors[i].data.upTrendCount*100)/state.authors[i].data.papers.length).toFixed(2)
+              state.authors[i].data.upTrendCount = state.authors[i].data.upTrendCount;
+              // state.authors[i].data.upTrendCount = Number.parseFloat((state.authors[i].data.upTrendCount*100)/state.authors[i].data.papers.length).toFixed(2)
               state.showChart = true;
-              // console.log(state.authors[i].data.upTrendCount/state.authors[i].data.papers.length)
+              // console.log(state.authors[i].data.upTrendCount)
             }
             this.setState(state)
           })
