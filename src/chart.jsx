@@ -19,16 +19,16 @@ class ChartComponent extends React.Component {
         },
 
         title: {
-            text: 'Solar Employment Growth by Sector, 2010-2016'
+            text: 'Author Profile Comparison'
         },
     
         subtitle: {
-            text: 'Source: thesolarfoundation.com'
+            text: 'Source: semanticscholar.com'
         },
     
         yAxis: {
             title: {
-                text: 'Number of Employees'
+                text: 'Number/Proportion'
             }
         },
         legend: {
@@ -38,11 +38,10 @@ class ChartComponent extends React.Component {
         },
     
         plotOptions: {
-            series: {
-                label: {
-                    connectorAllowed: false
-                },
-                pointStart: 2010
+            bar: {
+                dataLabels: {
+                    enabled: true
+                }
             }
         },
     
