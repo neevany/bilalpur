@@ -81,23 +81,24 @@ class ChartComponent extends React.Component {
     
     }
     }
+    this.handleChart(this.props.data)
   }
 
-    handleChart(event, authorState){
-    event.preventDefault();
+  handleChart(authors){
+    let state = this.state;
     let attributes = ['citationVelocity','InfluentialCitations','noOfpapers','upwardTrending'];
     for(var att=0;att<attributes.length;att++){
-    this.state.config.series.push({name:attributes[att],data:[]});
-    authorState.forEach((author,i)=>{
+    state.config.series.push({name:attributes[att],data:[]});
+    authors.forEach((author,i)=>{
         console.log(author.data.citationVelocity)
         if(i==0)
-            this.state.config.series[att].data.push(author.data.citationVelocity);
+            state.config.series[att].data.push(author.data.citationVelocity);
         else if(i==1)
-            this.state.config.series[att].data.push(author.data.InfluentialCitations);
+            state.config.series[att].data.push(author.data.InfluentialCitations);
         else if(i==2)
-            this.state.config.series[att].data.push(author.data.papers.length);
+            state.config.series[att].data.push(author.data.papers.length);
         else
-            this.state.config.series[att].data.push(author.data.upTrendCount);
+            state.config.series[att].data.push(author.data.upTrendCount);
     })
     }
     this.setState(state);
