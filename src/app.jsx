@@ -145,6 +145,17 @@ Call Semantic Scholar API with paperId
     return axios.get(`http://api.semanticscholar.org/v1/paper/${paperId}`);
   }
 
+  handlelist(event, i){
+    event.preventDefault();
+    return(
+      <ul>
+      for(var j=6;j<this.state.authors[i].data.papersData.length;j++){
+        <li key={j}>{this.state.authors[i].data.papersData[j].name}-{this.state.authors[i].data.papersData[j].trend}</li>
+      </ul>
+      }
+    );
+  }
+
 /**
 Render the page with authorId inputs and author details cards
 */
@@ -187,9 +198,10 @@ Render the page with authorId inputs and author details cards
                 <p>No of papers: {author.data.papers.length}</p>
                 <p>List of paper with citation trend:</p>
                 <ul>
-                {author.data.papersData ? [...Array(author.data.papersData.length)].map((v,i) => {
+                {author.data.papersData ? [...Array(author.data.papersData.length)].map((5,i) => {
                   return <li key={i}>{author.data.papersData[i].name} - {author.data.papersData[i].trend}</li>
                 }) : null}
+                <input type="submit" onClick={(e)=>this.handlelist(e, i)}>Expand</ input>
                 </ul>
               </card>
             </div> : 
