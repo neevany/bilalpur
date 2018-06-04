@@ -1,6 +1,7 @@
 import React from 'react';
 import axios from 'axios'
 import ChartComponent from './chart'
+import { Accordion, AccordionItem } from 'react-sanfona';
 
 class AppComponent extends React.Component {
 /**
@@ -97,7 +98,7 @@ Takes citation papers with details and returns if each paper's trend in past NO_
 @param {int} currYear - current year.
 @returns {int} trendFlag indicates if a paper is upward trending(1)
 */
-  getUpTrendCount(citations) {
+  getUpTrendCount(citations) {  
     let NO_OF_YEARS = 3;
     let currYear = (new Date()).getFullYear();
     let citedYears = [];
@@ -185,11 +186,15 @@ Render the page with authorId inputs and author details cards
               <p>Influential Citation Count: {author.data.influentialCitationCount}</p>
               <p>No of papers: {author.data.papers.length}</p>
               <p>List of paper with citation trend:</p>
+              <Accordion>
               <ul>
                 {[...Array(author.data.papers.length)].map((v,i) => {
+                  {/*<AccordionItem title={i} expanded={v === 1}>*/}
                   return author.data.papers[i].data ? <li key={i}>{author.data.papers[i].data.title}-{author.data.papers[i].data.trend?<font color="#4682B4">Up</font>:<font color="red">Down</font>}</li> : null
+                  {/*</AccordionItem>*/}
                 })}
               </ul>
+              </Accordion>
             </card>
           </div> : null)
         )}
