@@ -23,7 +23,7 @@ class ChartComponent extends React.Component {
         },
         yAxis: {
             title: {
-                text: 'Number/Proportion'
+                text: 'Number'
             }
         },
         legend: {

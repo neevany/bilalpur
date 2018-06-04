@@ -1,4 +1,32 @@
-import React from 'react';
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: app.jsx</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: app.jsx</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React from 'react';
 import axios from 'axios'
 import ChartComponent from './chart'
 
@@ -80,7 +108,7 @@ class AppComponent extends React.Component {
               state.authors[i].data.papers[j].citationCount = response.data.citations.length;
             })
             state.authors[i].citationCount = state.authors[i].data.papers.map(p => p.citationCount).reduce((i,a) => a = a+i ,0);
-            state.authors[i].data.papers.sort((a,b) => {return a.citationCount < b.citationCount ? 1 : -1});
+            state.authors[i].data.papers.sort((a,b) => {return a.citationCount &lt; b.citationCount ? 1 : -1});
             this.setState(state)
             Promise.all(authorPromises).then(() => {
               state.showChart = true;
@@ -102,7 +130,7 @@ Takes citation papers with details and returns if each paper's trend in past NO_
     let currYear = (new Date()).getFullYear();
     let citedYears = [];
     citations.forEach((cite, k) => {
-      if (currYear - NO_OF_YEARS < cite.year && cite.year < currYear)
+      if (currYear - NO_OF_YEARS &lt; cite.year &amp;&amp; cite.year &lt; currYear)
         citedYears.push(cite.year)
     })
     
@@ -119,8 +147,8 @@ Takes citation papers with details and returns if each paper's trend in past NO_
       }
     }
     var trendFlag = 1;
-    for (var i = 1; i < NO_OF_YEARS; i++) {
-      if (count[i - 1] < count[i])
+    for (var i = 1; i &lt; NO_OF_YEARS; i++) {
+      if (count[i - 1] &lt; count[i])
         trendFlag = 0;
     }
     return trendFlag
@@ -150,53 +178,76 @@ Render the page with authorId inputs and author details cards
 
   render() { 
     return (
-      <grid>
-      <div col="1/4">
-      <div style={{padding:'10px'}}>
-        <form onSubmit={(e) => this.handleSubmit(e)}>
-          <label>No of Authors:
-            <select value={this.state.noOfAuthors} onChange={(e) => this.handleAuthorsSelect(e)}>
+      &lt;grid>
+      &lt;div col="1/4">
+      &lt;div style={{padding:'10px'}}>
+        &lt;form onSubmit={(e) => this.handleSubmit(e)}>
+          &lt;label>No of Authors:
+            &lt;select value={this.state.noOfAuthors} onChange={(e) => this.handleAuthorsSelect(e)}>
             {[...Array(this.state.maxAuthors)].map((v,i) => {
-              return <option key={i+1} value={i+1}>{i+1}</option>
+              return &lt;option key={i+1} value={i+1}>{i+1}&lt;/option>
             })}
-            </select>
-          </label>
+            &lt;/select>
+          &lt;/label>
           {[...Array(this.state.noOfAuthors)].map((v,i) => {
             return (
-            <label key={i}>Author ID {i+1}:
-              <input type="text" value={this.state.authors[i] && this.state.authors[i].id} onChange={(e) => this.handleAuthorName(e,i)} />
-            </label>
+            &lt;label key={i}>Author ID {i+1}:
+              &lt;input type="text" value={this.state.authors[i] &amp;&amp; this.state.authors[i].id} onChange={(e) => this.handleAuthorName(e,i)} />
+            &lt;/label>
             )
           })}
-          <input type="submit" value="Submit" />
-        </form>
-        </div>
-      </div>
-      <div col="3/4">
-      {this.state.showChart ? <ChartComponent data={this.state.authors}/> : null }
-      <div style={{display:'flex',flexWrap: 'wrap'}}>
+          &lt;input type="submit" value="Submit" />
+        &lt;/form>
+        &lt;/div>
+      &lt;/div>
+      &lt;div col="3/4">
+      {this.state.showChart ? &lt;ChartComponent data={this.state.authors}/> : null }
+      &lt;div style={{display:'flex',flexWrap: 'wrap'}}>
         {this.state.authors.map((author,i) => author.loading ? 
-          <div key={i} className="spinner"></div> : 
-          (author.data ? <div key={i} style={{flex:'1 0 30%',margin:'5px'}}>
-            <card>
-              <h5>{author.data.name} <a href={author.data.url} target="_blank" style={{opacity: '0.5',float: 'right'}}>#{author.data.authorId}</a></h5>
-              <hr/>
-              <p>Citation Velocity: {author.data.citationVelocity}</p>
-              <p>Influential Citation Count: {author.data.influentialCitationCount}</p>
-              <p>No of papers: {author.data.papers.length}</p>
-              <p>List of paper with citation trend:</p>
-              <ul>
+          &lt;div key={i} className="spinner">&lt;/div> : 
+          (author.data ? &lt;div key={i} style={{flex:'1 0 30%',margin:'5px'}}>
+            &lt;card>
+              &lt;h5>{author.data.name} &lt;a href={author.data.url} target="_blank" style={{opacity: '0.5',float: 'right'}}>#{author.data.authorId}&lt;/a>&lt;/h5>
+              &lt;hr/>
+              &lt;p>Citation Velocity: {author.data.citationVelocity}&lt;/p>
+              &lt;p>Influential Citation Count: {author.data.influentialCitationCount}&lt;/p>
+              &lt;p>No of papers: {author.data.papers.length}&lt;/p>
+              &lt;p>List of paper with citation trend:&lt;/p>
+              &lt;ul>
                 {[...Array(author.data.papers.length)].map((v,i) => {
-                  return author.data.papers[i].data ? <li key={i}>{author.data.papers[i].data.title}-{author.data.papers[i].data.trend?<font color="#4682B4">Up</font>:<font color="red">Down</font>}</li> : null
+                  return author.data.papers[i].data ? &lt;li key={i}>{author.data.papers[i].data.title}-{author.data.papers[i].data.trend?&lt;font color="#4682B4">Up&lt;/font>:&lt;font color="red">Down&lt;/font>}&lt;/li> : null
                 })}
-              </ul>
-            </card>
-          </div> : null)
+              &lt;/ul>
+            &lt;/card>
+          &lt;/div> : null)
         )}
-      </div>
-      </div>
-      </grid>
+      &lt;/div>
+      &lt;/div>
+      &lt;/grid>
     )
   }
 } 
 export default AppComponent;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="AppComponent.html">AppComponent</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Mon Jun 04 2018 11:19:00 GMT+0530 (IST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
