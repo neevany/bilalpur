@@ -35,7 +35,9 @@ class AppComponent extends React.Component {
 
   handleAuthorName(event,index) {
     let state = this.state;
-    state.authors[index] = {};
+    if(!state.authors[index]){
+      state.authors[index] = {};
+    }
     state.authors[index].id = event.target.value;
     this.setState(state);
   }
@@ -52,52 +54,37 @@ class AppComponent extends React.Component {
 */
   handleSubmit(event) {
     event.preventDefault();
-    var noOfYears = 3;
-    var currYear = (new Date()).getFullYear();
     let state = this.state;
+    state.showChart = false;
+    this.setState(state)
+    let authorPromises = [];
     state.authors.forEach((a,i) => {
       state.authors[i].loading = true;
       this.setState(state)
-      this.getAuthorInfo(a.id).then((response) => {
-        state.authors[i].data = response.data;
-        state.authors[i].data.upTrendCount = 0;
-        state.authors[i].loading = false;
-        state.authors[i].citations = 0;
-        this.setState(state);
-
-        state.authors[i].data.papersData = [];
-        state.authors[i].data.papers.forEach((p,j) =>{
-          this.getPaperInfo(p.paperId).then((response) => {
-            
-            let citationYears = [];
-            response.data.citations.forEach((cite, k)=>{
-              if((cite.year > currYear - noOfYears - 1) && cite.year != currYear){
-                citationYears.push(cite.year);
-              }
-            })
-            citationYears.sort((a,b) => {return a < b ? 1 : -1});
-            
-            let trend = this.getCitationTrend(citationYears, noOfYears, currYear);
-            if(trend == 'Upward Trending')
-              state.authors[i].data.upTrendCount++;
-
-            state.authors[i].data.papersData.push({
-              name: response.data.title,
-              citations: response.data.citations.length,
-              citationYears: citationYears,
-              trend: trend,
-            });
-
-            if(state.authors[i].data.papersData.length === state.authors[i].data.papers.length) {
-              state.authors[i].citations += state.authors[i].data.papersData.map(p => p.citations).reduce((i,a) => a = a+i ,0);
-              state.authors[i].data.papersData.sort((a,b) => {return a.citations < b.citations ? 1 : -1});
-              state.authors[i].data.upTrendCount = state.authors[i].data.upTrendCount;
-              // state.authors[i].data.upTrendCount = Number.parseFloat((state.authors[i].data.upTrendCount*100)/state.authors[i].data.papers.length).toFixed(2)
-              state.showChart = true;
-              // console.log(state.authors[i].data.upTrendCount)
-            }
-            this.setState(state)
+      let autorPr = this.getAuthorInfo(a.id)
+      authorPromises.push(autorPr);      
+      autorPr.then((response) => {
+          state.authors[i].data = response.data;
+          state.authors[i].loading = false;
+          state.authors[i].data.upTrendCount = 0;
+          this.setState(state);
+          let paperPromises = [];
+          state.authors[i].data.papers.forEach((p,j) =>{
+            paperPromises.push(this.getPaperInfo(p.paperId))
           })
+          Promise.all(paperPromises).then((responses) => {
+            responses.forEach((response,j) => {
+              state.authors[i].data.papers[j].data = response.data;
+              state.authors[i].data.upTrendCount += this.getUpTrendCount(response.data.citations); 
+              state.authors[i].data.papers[j].citationCount = response.data.citations.length;
+            })
+            state.authors[i].citationCount = state.authors[i].data.papers.map(p => p.citationCount).reduce((i,a) => a = a+i ,0);
+            state.authors[i].data.papers.sort((a,b) => {return a.citationCount < b.citationCount ? 1 : -1});
+            this.setState(state)
+            Promise.all(authorPromises).then(() => {
+              state.showChart = true;
+              this.setState(state)
+            })
         })
       })
     })
@@ -108,23 +95,26 @@ Return the year wise relative citation trend
 @params {int} noOfYears-no. of years of citation trend to consider(set to 3).
 @params {int} currYear-current year.
 */
-  getCitationTrend(citationYears, noOfYears = 3, currYear){
-    var ref = citationYears[0], ref_id = 0;
-    var count = new Array(noOfYears).fill(0);
-    for (var i = 1; citationYears[i] > currYear - noOfYears - 1; i++) { //exclude the current year in determining the trend
-      if (citationYears[i] == ref)
-        count[ref_id]++;
-      else {
-        ref = citationYears[i];
-        ref_id++;
-      }
-    }
-    var trendFlag = 1;
-    for (var i = 1; i < noOfYears; i++) {
-      if (count[i - 1] < count[i])
-        trendFlag = 0;
-    }
-    return trendFlag? 'Upward Trending': 'Downward Trending'
+  getUpTrendCount(citations) {
+    let NO_OF_YEARS = 3;
+    let currYear = (new Date()).getFullYear();
+    let citedYears = [];
+    citations.forEach((cite, k) => {
+      if (currYear - NO_OF_YEARS < cite.year && cite.year < currYear)
+        citedYears.push(cite.year)
+    })
+    
+    citedYears.sort();
+    let freq = citedYears.reduce((prev, curr) => (prev[curr] = ++prev[curr] || 1, prev), {})
+
+    let trend = Object.values(freq);
+    let sortedTrend = trend.sort()
+    let upTrendCount = 0
+
+    if (sortedTrend.every((v, i) => v === trend[i])) {
+      upTrendCount++
+    };
+    return upTrendCount;
   }
 
 /**
@@ -174,30 +164,27 @@ Render the page with authorId inputs and author details cards
         </div>
       </div>
       <div col="3/4">
+      {this.state.showChart ? <ChartComponent data={this.state.authors}/> : null }
       <div style={{display:'flex',flexWrap: 'wrap'}}>
-        {this.state.authors.map((author,i) => {
-          {return author.loading ?  <div key={i} className="spinner"></div> : 
-            (author.data ? 
-            <div key={i} style={{flex:'1 0 30%',margin:'5px'}}>
-              <card>
-                <h5>{author.data.name} <a href={author.data.url} target="_blank" style={{opacity: '0.5',float: 'right'}}>#{author.data.authorId}</a></h5>
-                <hr/>
-                  <p>Citation Velocity: {author.data.citationVelocity}</p>
-                <p>Influential Citation Count: {author.data.influentialCitationCount}</p>
-                <p>No of papers: {author.data.papers.length}</p>
-                <p>List of paper with citation trend:</p>
-                <ul>
-                {author.data.papersData ? [...Array(author.data.papersData.length)].map((v,i) => {
-                  return <li key={i}>{author.data.papersData[i].name} - {author.data.papersData[i].trend}</li>
-                }) : null}
-                </ul>
-              </card>
-            </div> : 
-            null)
-          }
-        })}
+        {this.state.authors.map((author,i) => author.loading ? 
+          <div key={i} className="spinner"></div> : 
+          (author.data ? <div key={i} style={{flex:'1 0 30%',margin:'5px'}}>
+            <card>
+              <h5>{author.data.name} <a href={author.data.url} target="_blank" style={{opacity: '0.5',float: 'right'}}>#{author.data.authorId}</a></h5>
+              <hr/>
+              <p>Citation Velocity: {author.data.citationVelocity}</p>
+              <p>Influential Citation Count: {author.data.influentialCitationCount}</p>
+              <p>No of papers: {author.data.papers.length}</p>
+              <p>List of paper with citation trend:</p>
+              <ul>
+                {[...Array(author.data.papers.length)].map((v,i) => {
+                  return author.data.papers[i].data ? <li key={i}>{author.data.papers[i].data.title}</li> : null
+                })}
+              </ul>
+            </card>
+          </div> : null)
+        )}
       </div>
-        {this.state.showChart ? <ChartComponent data={this.state.authors}/> : null }
       </div>
       </grid>
     )
