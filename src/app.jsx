@@ -7,7 +7,7 @@ class AppComponent extends React.Component {
 /**
   *Declare AppComponent class with default settings
   *max. comparison of 10 authors (default author ids-"1741101" and "1741102").
-  @contructor
+  @constructor
 */
   constructor(props) {
     super(props);
@@ -48,10 +48,10 @@ class AppComponent extends React.Component {
  * @returns   state.authors[]
  * @returns   state.authors[].id
  * @returns   state.authors[].data.influential citations
- * @returns   state.authors[].data.papersData.name--names in sorted order of citations
- * @returns   state.authors[].data.papersData.citations.
- * @returns   state.authors[].data.papersData.citationYears--array of citation year for each paper.
- * @returns   state.authors[].data.papersData.trend--if paper has increasing citations since the past 3 years(exclude current).
+ * @returns   state.authors[].data.papers.name--names in sorted order of citations
+ * @returns   state.authors[].data.papers.citations.
+ * @returns   state.authors[].data.papers.citationYears--array of citation year for each paper.
+ * @returns   state.authors[].data.papers.trend--if paper has increasing citations since the past 3 years(exclude current).
 */
   handleSubmit(event) {
     event.preventDefault();
@@ -185,15 +185,15 @@ Render the page with authorId inputs and author details cards and visualization
               <p>Citation Velocity: {author.data.citationVelocity}</p>
               <p>Influential Citation Count: {author.data.influentialCitationCount}</p>
               <p>No of papers: {author.data.papers.length}</p>
-              <ul>  
               <Accordion>
               <AccordionItem title={'Click to expand/collapse list of papers with citation trend'} expanded={0}>
+              <ul>  
                 {[...Array(author.data.papers.length)].map((v,i) => {
                   return author.data.papers[i].data ? <li key={i}>{author.data.papers[i].data.title}-{author.data.papers[i].data.trend?<font color="#4682B4">Up</font>:<font color="red">Down</font>}</li> : null
                 })}
+              </ul>
               </AccordionItem>
               </Accordion>
-              </ul>
             </card>
           </div> : null)
         )}
