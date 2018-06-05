@@ -14,7 +14,7 @@ class AppComponent extends React.Component {
     this.state = {
       maxAuthors: 10,
       noOfAuthors: 2,
-      authors: [{id:'1741101'},{id:'1741102'}],
+      authors: [{id:''},{id:''}],
       showChart: false
      }
   }
@@ -28,7 +28,7 @@ class AppComponent extends React.Component {
     let state = this.state;
     state.showChart = false;
     state.noOfAuthors = parseInt(event.target.value)
-    state.authors = [...Array(state.noOfAuthors)].map(a => { return {} })
+    state.authors = [...Array(state.noOfAuthors)].map(a => { return {id: ''} })
     this.setState(state)
   }
 
