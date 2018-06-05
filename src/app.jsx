@@ -58,36 +58,40 @@ class AppComponent extends React.Component {
     let state = this.state;
     state.showChart = false;
     this.setState(state)
+    
     let authorPromises = [];
-    state.authors.forEach((a,i) => {
+    let paperPromises = [];
+    
+    state.authors.forEach((a,i) => { 
       state.authors[i].loading = true;
-      this.setState(state)
-      let autorPr = this.getAuthorInfo(a.id)
-      authorPromises.push(autorPr);      
-      autorPr.then((response) => {
-          state.authors[i].data = response.data;
-          state.authors[i].loading = false;
-          state.authors[i].data.upTrendCount = 0;
-          this.setState(state);
-          let paperPromises = [];
-          state.authors[i].data.papers.forEach((p,j) =>{
-            paperPromises.push(this.getPaperInfo(p.paperId))
+      this.setState(state);
+      authorPromises.push(this.getAuthorInfo(a.id)) 
+    })
+
+    Promise.all(authorPromises).then((responses) => {
+      responses.forEach((response,i) => {
+        state.authors[i].data = response.data;
+        state.authors[i].data.upTrendCount = 0;
+        state.authors[i].loading = false;
+        
+        paperPromises[i] = []
+        response.data.papers.forEach(p =>  paperPromises[i].push(this.getPaperInfo(p.paperId)))
+        Promise.all(paperPromises[i]).then((responses) => {
+          responses.forEach((res,j) => {
+            state.authors[i].data.papers[j].data = res.data
+            state.authors[i].data.papers[j].data.trend = this.getUpTrendCount(res.data.citations); 
+            state.authors[i].data.upTrendCount += state.authors[i].data.papers[j].data.trend
+            state.authors[i].data.papers[j].citationCount = res.data.citations.length;
           })
-          Promise.all(paperPromises).then((responses) => {
-            responses.forEach((response,j) => {
-              state.authors[i].data.papers[j].data = response.data;
-              state.authors[i].data.papers[j].data.trend = this.getUpTrendCount(response.data.citations); 
-              state.authors[i].data.upTrendCount += state.authors[i].data.papers[j].data.trend
-              state.authors[i].data.papers[j].citationCount = response.data.citations.length;
-            })
-            state.authors[i].citationCount = state.authors[i].data.papers.map(p => p.citationCount).reduce((i,a) => a = a+i ,0);
-            state.authors[i].data.papers.sort((a,b) => {return a.citationCount < b.citationCount ? 1 : -1});
-            this.setState(state)
-            Promise.all(authorPromises).then(() => {
-              state.showChart = true;
-              this.setState(state)
-            })
+          state.authors[i].citationCount = state.authors[i].data.papers.map(p => p.citationCount).reduce((i,a) => a = a+i ,0);
+          state.authors[i].data.papers.sort((a,b) => a.citationCount < b.citationCount ? 1 : -1);
         })
+      })
+      // After all the paper requests completed
+      let allAuthorsPapers = paperPromises.reduce((a, b) => a.concat(b), []);
+      Promise.all(allAuthorsPapers).then(() => {
+        state.showChart = true;
+        this.setState(state);
       })
     })
   }

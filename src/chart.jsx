@@ -75,9 +75,7 @@ class ChartComponent extends React.Component {
     let state = this.state;
     state.config.series = []
     this.setState(state)
-    if(props.data[props.data.length]){
     this.handleChart(props.data)
-    }
   }
 
 
@@ -90,7 +88,6 @@ class ChartComponent extends React.Component {
     for(var att=0;att<attributes.length;att++){
       state.config.series.push({name:attributes[att],data:[]});
       authors.forEach((author,i)=>{
-        console.log(attributes[att],i);
           if(att==0)
               state.config.series[att].data.push(author.data.citationVelocity);
           else if(att==1)
