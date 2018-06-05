@@ -6,7 +6,7 @@ import { Accordion, AccordionItem } from 'react-sanfona';
 class AppComponent extends React.Component {
 /**
   *Declare AppComponent class with default settings
-  *max. comparison of 10 authors (default author ids-"1741101" and "1741102").
+  *max. comparison of 10 authors
   @constructor
 */
   constructor(props) {
@@ -21,7 +21,7 @@ class AppComponent extends React.Component {
 
 /**
   *member function triggered on "no.of authors" field change
-  @returns {state}+ State updated with no. of authors
+  @returns {state} State updated with no. of authors
 */
   
   handleAuthorsSelect(event) {
@@ -48,14 +48,8 @@ class AppComponent extends React.Component {
   }
 
 /**
- *Get author details and top 3 papers upon submit
- * @returns   state.authors[]
- * @returns   state.authors[].id
- * @returns   state.authors[].data.influential citations
- * @returns   state.authors[].data.papers.name--names in sorted order of citations
- * @returns   state.authors[].data.papers.citations.
- * @returns   state.authors[].data.papers.citationYears--array of citation year for each paper.
- * @returns   state.authors[].data.papers.trend--if paper has increasing citations since the past 3 years(exclude current).
+ *Get author details and determine the paper trend upon submit
+   @returns {state} State updated with author and paper details.
 */
   handleSubmit(event) {
     event.preventDefault();
@@ -102,8 +96,6 @@ class AppComponent extends React.Component {
 
 /**
 Takes citation papers with details and returns if each paper's trend in past NO_OF_YEARS
-@param {int} NO_OF_YEARS - no. of years of citation trend to consider(defaults to 3).
-@param {int} currYear - current year.
 @returns {int} trendFlag indicates if a paper is upward trending(1)
 */
   getUpTrendCount(citations) {  
@@ -194,10 +186,10 @@ Render the page with authorId inputs and author details cards and visualization
               <p>Influential Citation Count: {author.data.influentialCitationCount}</p>
               <p>No of papers: {author.data.papers.length}</p>
               <Accordion>
-              <AccordionItem title={'Click to expand/collapse list of papers with citation trend'} expanded={0}>
+              <AccordionItem title={'Click to expand/collapse list of papers with citation trend'} className='expand' expanded={0}>
               <ul>  
                 {[...Array(author.data.papers.length)].map((v,i) => {
-                  return author.data.papers[i].data ? <li key={i}>{author.data.papers[i].data.title}-{author.data.papers[i].data.trend?<font color="#4682B4">Up</font>:<font color="red">Down</font>}</li> : null
+                  return author.data.papers[i].data ? <li key={i} id="expand_content">{author.data.papers[i].data.title}-{author.data.papers[i].data.trend?<font color="#4682B4">Up</font>:<font color="red">Down</font>}</li> : null
                 })}
               </ul>
               </AccordionItem>

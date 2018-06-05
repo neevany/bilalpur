@@ -34,7 +34,7 @@ import { Accordion, AccordionItem } from 'react-sanfona';
 class AppComponent extends React.Component {
 /**
   *Declare AppComponent class with default settings
-  *max. comparison of 10 authors (default author ids-"1741101" and "1741102").
+  *max. comparison of 10 authors
   @constructor
 */
   constructor(props) {
@@ -42,18 +42,22 @@ class AppComponent extends React.Component {
     this.state = {
       maxAuthors: 10,
       noOfAuthors: 2,
-      authors: [{id:'1741101'},{id:'1741102'}],
+      authors: [{id:''},{id:''}],
       showChart: false
      }
   }
 
 /**
   *member function triggered on "no.of authors" field change
-  @returns {state}+ State updated with no. of authors
+  @returns {state} State updated with no. of authors
 */
   
   handleAuthorsSelect(event) {
-    this.setState({noOfAuthors: parseInt(event.target.value)});
+    let state = this.state;
+    state.showChart = false;
+    state.noOfAuthors = parseInt(event.target.value)
+    state.authors = [...Array(state.noOfAuthors)].map(a => { return {id: ''} })
+    this.setState(state)
   }
 
 /**
@@ -72,58 +76,54 @@ class AppComponent extends React.Component {
   }
 
 /**
- *Get author details and top 3 papers upon submit
- * @returns   state.authors[]
- * @returns   state.authors[].id
- * @returns   state.authors[].data.influential citations
- * @returns   state.authors[].data.papers.name--names in sorted order of citations
- * @returns   state.authors[].data.papers.citations.
- * @returns   state.authors[].data.papers.citationYears--array of citation year for each paper.
- * @returns   state.authors[].data.papers.trend--if paper has increasing citations since the past 3 years(exclude current).
+ *Get author details and determine the paper trend upon submit
+   @returns {state} State updated with author and paper details.
 */
   handleSubmit(event) {
     event.preventDefault();
     let state = this.state;
     state.showChart = false;
     this.setState(state)
+    
     let authorPromises = [];
-    state.authors.forEach((a,i) => {
+    let paperPromises = [];
+    
+    state.authors.forEach((a,i) => { 
       state.authors[i].loading = true;
-      this.setState(state)
-      let autorPr = this.getAuthorInfo(a.id)
-      authorPromises.push(autorPr);      
-      autorPr.then((response) => {
-          state.authors[i].data = response.data;
-          state.authors[i].loading = false;
-          state.authors[i].data.upTrendCount = 0;
-          this.setState(state);
-          let paperPromises = [];
-          state.authors[i].data.papers.forEach((p,j) =>{
-            paperPromises.push(this.getPaperInfo(p.paperId))
+      this.setState(state);
+      authorPromises.push(this.getAuthorInfo(a.id)) 
+    })
+
+    Promise.all(authorPromises).then((responses) => {
+      responses.forEach((response,i) => {
+        state.authors[i].data = response.data;
+        state.authors[i].data.upTrendCount = 0;
+        state.authors[i].loading = false;
+        
+        paperPromises[i] = []
+        response.data.papers.forEach(p =>  paperPromises[i].push(this.getPaperInfo(p.paperId)))
+        Promise.all(paperPromises[i]).then((responses) => {
+          responses.forEach((res,j) => {
+            state.authors[i].data.papers[j].data = res.data
+            state.authors[i].data.papers[j].data.trend = this.getUpTrendCount(res.data.citations); 
+            state.authors[i].data.upTrendCount += state.authors[i].data.papers[j].data.trend
+            state.authors[i].data.papers[j].citationCount = res.data.citations.length;
           })
-          Promise.all(paperPromises).then((responses) => {
-            responses.forEach((response,j) => {
-              state.authors[i].data.papers[j].data = response.data;
-              state.authors[i].data.papers[j].data.trend = this.getUpTrendCount(response.data.citations); 
-              state.authors[i].data.upTrendCount += state.authors[i].data.papers[j].data.trend
-              state.authors[i].data.papers[j].citationCount = response.data.citations.length;
-            })
-            state.authors[i].citationCount = state.authors[i].data.papers.map(p => p.citationCount).reduce((i,a) => a = a+i ,0);
-            state.authors[i].data.papers.sort((a,b) => {return a.citationCount &lt; b.citationCount ? 1 : -1});
-            this.setState(state)
-            Promise.all(authorPromises).then(() => {
-              state.showChart = true;
-              this.setState(state)
-            })
+          state.authors[i].citationCount = state.authors[i].data.papers.map(p => p.citationCount).reduce((i,a) => a = a+i ,0);
+          state.authors[i].data.papers.sort((a,b) => a.citationCount &lt; b.citationCount ? 1 : -1);
         })
+      })
+      // After all the paper requests completed
+      let allAuthorsPapers = paperPromises.reduce((a, b) => a.concat(b), []);
+      Promise.all(allAuthorsPapers).then(() => {
+        state.showChart = true;
+        this.setState(state);
       })
     })
   }
 
 /**
 Takes citation papers with details and returns if each paper's trend in past NO_OF_YEARS
-@param {int} NO_OF_YEARS - no. of years of citation trend to consider(defaults to 3).
-@param {int} currYear - current year.
 @returns {int} trendFlag indicates if a paper is upward trending(1)
 */
   getUpTrendCount(citations) {  
@@ -214,10 +214,10 @@ Render the page with authorId inputs and author details cards and visualization
               &lt;p>Influential Citation Count: {author.data.influentialCitationCount}&lt;/p>
               &lt;p>No of papers: {author.data.papers.length}&lt;/p>
               &lt;Accordion>
-              &lt;AccordionItem title={'Click to expand/collapse list of papers with citation trend'} expanded={0}>
+              &lt;AccordionItem title={'Click to expand/collapse list of papers with citation trend'} className='expand' expanded={0}>
               &lt;ul>  
                 {[...Array(author.data.papers.length)].map((v,i) => {
-                  return author.data.papers[i].data ? &lt;li key={i}>{author.data.papers[i].data.title}-{author.data.papers[i].data.trend?&lt;font color="#4682B4">Up&lt;/font>:&lt;font color="red">Down&lt;/font>}&lt;/li> : null
+                  return author.data.papers[i].data ? &lt;li key={i} id="expand_content">{author.data.papers[i].data.title}-{author.data.papers[i].data.trend?&lt;font color="#4682B4">Up&lt;/font>:&lt;font color="red">Down&lt;/font>}&lt;/li> : null
                 })}
               &lt;/ul>
               &lt;/AccordionItem>
@@ -248,7 +248,7 @@ export default AppComponent;
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Tue Jun 05 2018 11:14:57 GMT+0530 (IST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Wed Jun 06 2018 00:44:18 GMT+0530 (IST)
 </footer>
 
 <script> prettyPrint(); </script>

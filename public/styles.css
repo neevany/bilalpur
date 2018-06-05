@@ -20,3 +20,11 @@
 #title{
   margin: 0px 175px;
 }
+
+.expand{
+  font-size: 10px;
+}
+
+#expand_content{
+  font-size: 15px;
+}

@@ -50,7 +50,7 @@
 
 <div class="description">
     Declare AppComponent class with default settings
-max. comparison of 10 authors (default author ids-"1741101" and "1741102").
+max. comparison of 10 authors
 </div>
 
 
@@ -418,7 +418,7 @@ max. comparison of 10 authors (default author ids-"1741101" and "1741102").
     
 
     
-    <h4 class="name" id="getUpTrendCount"><span class="type-signature"></span>getUpTrendCount<span class="signature">(NO_OF_YEARS, currYear)</span><span class="type-signature"> &rarr; {int}</span></h4>
+    <h4 class="name" id="getUpTrendCount"><span class="type-signature"></span>getUpTrendCount<span class="signature">()</span><span class="type-signature"> &rarr; {int}</span></h4>
     
 
     
@@ -435,78 +435,6 @@ max. comparison of 10 authors (default author ids-"1741101" and "1741102").
 
 
 
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>NO_OF_YEARS</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">int</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">no. of years of citation trend to consider(defaults to 3).</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>currYear</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">int</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">current year.</td>
-        </tr>
-
-    
-    </tbody>
-</table>
 
 
 
@@ -699,7 +627,7 @@ max. comparison of 10 authors (default author ids-"1741101" and "1741102").
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="app.jsx.html">app.jsx</a>, <a href="app.jsx.html#line37">line 37</a>
+        <a href="app.jsx.html">app.jsx</a>, <a href="app.jsx.html#line41">line 41</a>
     </li></ul></dd>
     
 
@@ -834,7 +762,7 @@ max. comparison of 10 authors (default author ids-"1741101" and "1741102").
 
         
 <div class="param-desc">
-    + State updated with no. of authors
+    State updated with no. of authors
 </div>
 
 
@@ -863,7 +791,7 @@ max. comparison of 10 authors (default author ids-"1741101" and "1741102").
     
 
     
-    <h4 class="name" id="handleSubmit"><span class="type-signature"></span>handleSubmit<span class="signature">()</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="handleSubmit"><span class="type-signature"></span>handleSubmit<span class="signature">()</span><span class="type-signature"> &rarr; {state}</span></h4>
     
 
     
@@ -871,7 +799,7 @@ max. comparison of 10 authors (default author ids-"1741101" and "1741102").
 
 
 <div class="description">
-    Get author details and top 3 papers upon submit
+    Get author details and determine the paper trend upon submit
 </div>
 
 
@@ -915,7 +843,7 @@ max. comparison of 10 authors (default author ids-"1741101" and "1741102").
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="app.jsx.html">app.jsx</a>, <a href="app.jsx.html#line56">line 56</a>
+        <a href="app.jsx.html">app.jsx</a>, <a href="app.jsx.html#line54">line 54</a>
     </li></ul></dd>
     
 
@@ -939,63 +867,27 @@ max. comparison of 10 authors (default author ids-"1741101" and "1741102").
 
 
 <h5>Returns:</h5>
-<ul>
-        <li>
+
+        
 <div class="param-desc">
-    state.authors[]
+    State updated with author and paper details.
 </div>
 
 
-</li>
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">state</span>
+
+
+    </dd>
+</dl>
+
     
-        <li>
-<div class="param-desc">
-    state.authors[].id
-</div>
-
-
-</li>
-    
-        <li>
-<div class="param-desc">
-    state.authors[].data.influential citations
-</div>
-
-
-</li>
-    
-        <li>
-<div class="param-desc">
-    state.authors[].data.papers.name--names in sorted order of citations
-</div>
-
-
-</li>
-    
-        <li>
-<div class="param-desc">
-    state.authors[].data.papers.citations.
-</div>
-
-
-</li>
-    
-        <li>
-<div class="param-desc">
-    state.authors[].data.papers.citationYears--array of citation year for each paper.
-</div>
-
-
-</li>
-    
-        <li>
-<div class="param-desc">
-    state.authors[].data.papers.trend--if paper has increasing citations since the past 3 years(exclude current).
-</div>
-
-
-</li>
-    </ul>
 
 
 
@@ -1109,7 +1001,7 @@ max. comparison of 10 authors (default author ids-"1741101" and "1741102").
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Tue Jun 05 2018 11:14:57 GMT+0530 (IST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Wed Jun 06 2018 00:44:18 GMT+0530 (IST)
 </footer>
 
 <script> prettyPrint(); </script>

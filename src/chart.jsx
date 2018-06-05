@@ -9,8 +9,9 @@ HighchartsExporting(ReactHighcharts.Highcharts);
 
 class ChartComponent extends React.Component {
 /**
-  *Chart component with count of an author attribute vs. author
+  *Chart component with count of author attribute vs. author
   @contructor
+  @param {props} props.data author details
 */
   constructor(props) {
     super(props);
