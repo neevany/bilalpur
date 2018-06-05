@@ -25,7 +25,11 @@ class AppComponent extends React.Component {
 */
   
   handleAuthorsSelect(event) {
-    this.setState({noOfAuthors: parseInt(event.target.value)});
+    let state = this.state;
+    state.showChart = false;
+    state.noOfAuthors = parseInt(event.target.value)
+    state.authors = [...Array(state.noOfAuthors)].map(a => { return {} })
+    this.setState(state)
   }
 
 /**
