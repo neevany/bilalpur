@@ -14,7 +14,7 @@ class AppComponent extends React.Component {
     this.state = {
       maxAuthors: 10,
       noOfAuthors: 2,
-      authors: [{id:''},{id:''}],
+      authors: [{id:'1741101'},{id:'1741102'}],
       showChart: false
      }
   }
@@ -142,7 +142,7 @@ Call Semantic Scholar API with paperId
 */
 
   getPaperInfo(paperId) {
-    return axios.get(`http://api.semanticscholar.org/v1/paper/${paperId}`);
+    return axios.get(`https://api.semanticscholar.org/v1/paper/${paperId}`);
   }
 
 /**
