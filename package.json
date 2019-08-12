@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "axios": "^0.18.0",
-    "highcharts": "^5.0.14",
+    "highcharts": "^6.1.0",
     "highcharts-exporting": "^0.1.2",
     "highcharts-more": "^0.1.2",
     "react": "^16.4.0",
